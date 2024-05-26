@@ -21,16 +21,15 @@ def video():
         img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
         detection_results = video_detection(img)
         return Response(pickle.dumps(detection_results), mimetype='application/octet-stream')
-
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 
 def video_detection(img):
-    model = YOLO("detector/models/best.pt")
+    model = YOLO("models/best.pt")
     results = model(img)
     return results
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=8000, debug=True)
