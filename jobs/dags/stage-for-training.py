@@ -1,14 +1,15 @@
-from datetime import timedelta
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.providers.amazon.aws.operators.s3 import S3DeleteObjectsOperator, S3ListOperator
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
-from datetime import datetime
+from datetime import datetime, timedelta
+from concurrent.futures import ThreadPoolExecutor
 
 
 s3_bucket = 'stream-n-detect'
 datalake_folder = 'datalake/'
 staging_folder = 'staging/'
+max_workers = 10
 
 # define DAG
 default_args = {
@@ -42,15 +43,14 @@ list_datalake_objects = S3ListOperator(
     dag=dag,
 )
 
-
 def copy_objects_to_staging(**kwargs):
     s3 = S3Hook(aws_conn_id='aws_default')
     datalake_objects = kwargs['ti'].xcom_pull(task_ids='list_datalake_objects')
 
     if not datalake_objects:
         raise ValueError("No objects found in the datalake folder.")
-
-    for obj_key in datalake_objects:
+    
+    def copy_object_task(obj_key):
         dest_key = obj_key.replace(datalake_folder, staging_folder, 1)
         s3.copy_object(
             source_bucket_key=obj_key,
@@ -59,7 +59,9 @@ def copy_objects_to_staging(**kwargs):
             dest_bucket_name=s3_bucket,
         )
 
-
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        executor.map(copy_object_task, datalake_objects)
+    
 stage_for_training = PythonOperator(
     task_id='stage_for_training',
     python_callable=copy_objects_to_staging,
@@ -68,6 +70,3 @@ stage_for_training = PythonOperator(
 
 # task dependencies order
 clear_staging >> list_datalake_objects >> stage_for_training
-
-# if __name__ == "__main__":
-#     dag.cli()
