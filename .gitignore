@@ -164,5 +164,6 @@ models/
 .DS_Store
 
 yolo-runs/
+yolo-mis/
 mis/
 logs/

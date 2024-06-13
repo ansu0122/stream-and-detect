@@ -1,0 +1,45 @@
+# Start minikube
+> minikube start --cpus=4 --memory=4096 --driver=docker
+> minikube status
+> minikube config view
+> kubectl config current-context  # check for kube cluster
+
+# Persist config for the future starts
+> minikube config set cpus 4
+> minikube config set memory 8192
+
+# List all installed releases on the cluster
+> helm list --all-namespaces
+
+# List Helm releases in the default namespace
+> helm list --namespace default
+
+# List all pods in the default namespace
+> kubectl get pods --namespace default
+
+# List all services in the default namespace
+> kubectl get services --namespace default
+
+# Get details of a specific Helm release
+> helm status my-mlflow --namespace default
+
+# Describe pod
+> kubectl describe pod my-mlflow-56d5d9f5bf-v6nr8 --namespace default
+
+# MLflow install to kube cluster (minikube)
+2. Download Helm installation script:
+> curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+3. Set execute permissions for the Helm installation script:
+> chmod 700 get_helm.sh
+4. Run the Helm installation script:
+> ./get_helm.sh
+5. Add the community Helm chart repository:
+> helm repo add community-charts https://community-charts.github.io/helm-charts
+6. Install the MLflow Helm chart:
+> helm install my-mlflow community-charts/mlflow --version 0.7.19
+7. Export the pod name to an environment variable:
+> export POD_NAME=$(kubectl get pods --namespace default -l "app.kubernetes.io/name=mlflow,app.kubernetes.io/instance=my-mlflow" -o jsonpath="{.items[0].metadata.name}")
+8. Export the container port to an environment variable:
+> export CONTAINER_PORT=$(kubectl get pod --namespace default $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+9. Set up port forwarding to access the MLflow UI:
+> kubectl --namespace default port-forward $POD_NAME 8080:$CONTAINER_PORT
