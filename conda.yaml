@@ -1,0 +1,28 @@
+name: mlops-kafka-yolo
+channels:
+  - defaults
+dependencies:
+  - python=3.10.14
+  - pip
+  - pip:
+    - torch
+    - torchvision
+    - ipykernel
+    # - seaborn
+    # - psutil
+    # - python-kaleido
+    # - python-graphviz
+    - torchmetrics
+    - scikit-learn==1.4.2
+    - flask==3.0.1
+    - ultralytics
+    # - imutils
+    - confluent-kafka==2.4.0
+    - opencv-python
+    - boto3
+    - s3fs
+    - mlflow
+    - databricks-sdk
+    - databricks-cli
+    # - requests==2.32.3
+    # - jsonschema==4.22.0

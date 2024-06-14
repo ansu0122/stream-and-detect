@@ -43,3 +43,17 @@
 > export CONTAINER_PORT=$(kubectl get pod --namespace default $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
 9. Set up port forwarding to access the MLflow UI:
 > kubectl --namespace default port-forward $POD_NAME 8080:$CONTAINER_PORT
+
+# Databricks
+> pip install databricks-sdk
+> pip install databricks-cli
+> databricks configure
+
+# miniconda
+# create conda environment
+> conda env create -f conda.yaml -n mlops-kafka-yolo
+> conda info --envs
+> conda activate mlops-kafka-yolo
+> python -m ipykernel install --user --name mlops-kafka-yolo --display-name "Python 3.10 (mlops-kafka-yolo)"
+
+> conda env remove -n mlops-kafka-yolo 
