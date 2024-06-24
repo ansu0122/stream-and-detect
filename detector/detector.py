@@ -26,7 +26,7 @@ def video():
 
 
 def video_detection(img):
-    model = YOLO("models/best.pt")
+    model = YOLO("detector/models/best.pt")
     results = model(img)
     return results
 

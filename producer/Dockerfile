@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.4
 # https://pythonspeed.com/articles/base-image-python-docker-images/
-FROM python:3.10
+FROM python:3.10-slim
 
 # set working directory to /app
 WORKDIR /app
@@ -31,5 +31,5 @@ EXPOSE 8000
 
 # Run app.py when the container launches
 # https://spacelift.io/blog/docker-entrypoint-vs-cmd
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["python3", "consumer.py"]
+ENTRYPOINT [ "/entrypoint.sh" ] 
+CMD ["python", "producer.py"]

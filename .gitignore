@@ -167,3 +167,6 @@ yolo-runs/
 yolo-mis/
 mis/
 logs/
+
+*.pt
+*.pth

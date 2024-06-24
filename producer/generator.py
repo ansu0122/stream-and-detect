@@ -6,8 +6,8 @@ import math
 import pickle
 
 classNames = ['bicycle', 'bus', 'car', 'motorbike', 'person']
-video_path = 'data/video/cars.mp4'
-output_folder = 'data/output/'
+video_path = 'trainer/data/video/cars.mp4'
+output_folder = 'trainer/data/output/'
 post_url = 'http://127.0.0.1:8000/detect'
 
 
