@@ -90,15 +90,11 @@ def delivery_callback(err, msg):
 def parse_args():
     parser = argparse.ArgumentParser(
         description='Stream video frames to Kafka')
-    parser.add_argument('--topic-detect', required=False,
+    parser.add_argument('--topic-detect', required=False, default='traffic',
                         help='Kafka topic to subscribed by detector')
-    parser.add_argument('--topic-track', required=False,
-                        help='Kafka topic to subscribed by tracker')
-    parser.add_argument('--partitions-detect', required=False,
+    parser.add_argument('--partitions-detect', required=False, default=1,
                         help='Number of partitions for detector topic')
-    parser.add_argument('--partitions-track', required=False,
-                        help='Number of partitions for tracker topic')
-    parser.add_argument('--video-dir', required=False,
+    parser.add_argument('--video-dir', required=False, default='video/',
                         help='Directory with video file(s)')
     
     return parser.parse_args()
@@ -116,8 +112,6 @@ def main():
     args = parse_args()
     topic_detect = os.getenv('TOPIC_DETECT', args.topic_detect)
     partitions_detect = os.getenv('PARTITIONS_DETECT', args.partitions_detect)
-    topic_track = os.getenv('TOPIC_TRACK', args.topic_track)
-    partitions_track= os.getenv('PARTITIONS_TRACK', args.partitions_track)
     video_dir = os.getenv('VIDEO_DIR', args.video_dir)
     print(video_dir)
     video_file = find_video_file(video_dir)
@@ -126,7 +120,6 @@ def main():
             "Please provide a video file in the specified directory")
     print(video_file)
     create_topic(broker, topic_detect, num_partitions=int(partitions_detect))
-    create_topic(broker, topic_track, num_partitions=int(partitions_track))
 
     produce_messages(topic_detect, video_file)
 

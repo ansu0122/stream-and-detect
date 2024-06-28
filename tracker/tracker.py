@@ -126,17 +126,15 @@ class YoloTracker:
 def parse_args():
     parser = argparse.ArgumentParser(
         description='Consume video frames from Kafka and counts objects')
-    parser.add_argument('--broker', required=False,
+    parser.add_argument('--broker', required=False, default='broker:9092',
                         help='Kafka broker')
-    parser.add_argument('--topic-in', required=False,
+    parser.add_argument('--topic-in', required=False, default='traffic',
                         help='Kafka topic to consume frames from')
-    parser.add_argument('--topic-out', required=False,
-                        help='Kafka topic to publish message to')
-    parser.add_argument('--output_dir', required=False,
+    parser.add_argument('--output_dir', required=False, default='output/',
                         help='Directory to save the detection results')
-    parser.add_argument('--model_path', required=False,
+    parser.add_argument('--model_path', required=False, default='tracker/models/best.pt',
                         help='Path to the model to use')
-    parser.add_argument('--classes-to-count', required=False,
+    parser.add_argument('--classes-to-count', required=False, default=[2],
                         help='Object classes to count')
     return parser.parse_args()
 
@@ -145,7 +143,6 @@ def main():
     args = parse_args()
     broker = os.getenv('BROKER', args.broker)
     topic_in = os.getenv('TOPIC_IN', args.topic_in)
-    # topic_out = os.getenv('TOPIC_OUT', args.topic_out)
     output_dir = os.getenv('OUTPUT_DIR', args.output_dir)
     model_path = os.getenv('MODEL_PATH', args.model_path)
     classes_to_count = os.getenv('CLASSES_TO_COUNT', args.classes_to_count)
