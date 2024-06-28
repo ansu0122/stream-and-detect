@@ -28,36 +28,10 @@ class MessageObjDecoder:
         return MessageObj(timestamp=datetime.fromisoformat(data['timestamp']),
                           frame_data=data['frame_data'])
 
-class MessageObjectOut(object):
-    def __init__(self, timestamp, frame_data, detections):
-        self.timestamp = timestamp
-        self.frame_data = frame_data
-        self.detections = detections
-
-class MessageObjEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, datetime):
-            return obj.isoformat()
-        elif isinstance(obj, MessageObjectOut):
-            return {
-                'timestamp': obj.timestamp,
-                'frame_data': obj.frame_data,
-                'detections': obj.detections
-            }
-        else:
-            return super().default(obj)
     
 def signal_handler(sig, frame):
     print("Received SIGTERM, shutting down gracefully...")
     sys.exit(0)
-
-
-def delivery_callback(err, msg):
-    if err is not None:
-        print("Delivery failed to {} topic at {} for {} with {} offset: {}".format(
-            msg.topic(), msg.partition(), msg.key(), msg.offset(), err))
-        return
-
 
 class DetectorService:
    
@@ -119,26 +93,18 @@ class DetectorService:
                     f'{self.output_dir}', f'{current_date}/labels', f'{file_label}.txt')
                 
                 cv2.imwrite(frame_filename, img)
+
                 results = self.detector(img)
                 detections, img = self.parse_result(img, results)
                 # cv2.imshow("Image", img)
                 self.save_yolo_labels(detections, label_filename, 640, 640)
 
-                msg_out = MessageObjectOut(timestamp=processing_start_time,
-                                     frame_data=img_bytes.hex(),
-                                     detections = detections)
-
-                self.producer.produce(self.topic_out, key=string_serializer(str(frame_number)), 
-                    value=json.dumps(msg_out, cls=MessageObjEncoder).encode("utf-8"),
-                    callback=delivery_callback)
-                self.producer.poll(0)
         except KafkaException as e:
             print(f"Kafka error: {e}")
         except KeyboardInterrupt:
             print("Aborted by user")
         finally:
             self.consumer.close()
-            self.producer.flush()
     
     def parse_result(self, img, results):
         detections = []
