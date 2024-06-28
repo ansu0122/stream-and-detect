@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.4
 # https://pythonspeed.com/articles/base-image-python-docker-images/
-FROM python:3.10
+FROM python:3.10-slim
 
 # set working directory to /app
 WORKDIR /app

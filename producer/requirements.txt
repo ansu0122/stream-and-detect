@@ -1,4 +1,2 @@
 confluent-kafka==2.4.0
 opencv-python
-requests==2.32.3
-jsonschema==4.22.0

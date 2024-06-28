@@ -1,0 +1,98 @@
+version: '3.8'
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.1
+    hostname: zookeeper
+    ports:
+      - 2181:2181
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - kafka
+
+  broker:
+    image: confluentinc/cp-kafka:7.4.1
+    hostname: broker
+    ports:
+      - 29092:29092
+      - 9092:9092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs-1
+      KAFKA_MESSAGE_MAX_BYTES: 20971520
+      KAFKA_REPLICA_FETCH_MAX_BYTES: 20971520
+    networks:
+      - kafka
+      
+  producer:
+    build: ./producer
+    image: stream-n-detect-producer-s3
+    entrypoint: ["/entrypoint.sh"]
+    depends_on:
+      - broker
+    volumes:
+      - s3bucket:/mnt/s3
+    environment:
+      - PARTITIONS_DETECT=2
+      - PARTITIONS_TRACK=1
+      - TOPIC_DETECT=detect
+      - TOPIC_TRACK=track
+      - VIDEO_DIR=/mnt/s3/video/
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    privileged: true
+    networks:
+      - kafka
+      
+  detector:
+    build: ./detector
+    image: stream-n-detect-detector-s3
+    entrypoint: ["/entrypoint.sh"]
+    depends_on:
+      - producer
+    volumes:
+      - s3bucket:/mnt/s3
+    environment:
+      - TOPIC_IN=detect
+      - TOPIC_OUT=track
+      - OUTPUT_DIR=/mnt/s3/output/
+      - MODEL_PATH=/mnt/s3/models/758fccaeef674621abf2a4740f75f814/artifacts/train/weights/best.pt
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    privileged: true
+    networks:
+      - kafka
+
+  tracker:
+    build: ./tracker
+    image: stream-n-detect-tracker-s3
+    entrypoint: ["/entrypoint.sh"]
+    depends_on:
+      - producer
+    volumes:
+      - ./output:/output
+    environment:
+      - BROKER = 'broker:9092' 
+      - TOPIC_IN=traffic
+      - OUTPUT_DIR=/mnt/s3/output/
+      - MODEL_PATH=/mnt/s3/models/758fccaeef674621abf2a4740f75f814/artifacts/train/weights/best.pt
+      - CLASSES_TO_COUNT = [2, 3]
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    privileged: true
+    networks:
+      - kafka
+      
+networks:
+  kafka:
+
+volumes:
+  s3bucket:
+    driver: local

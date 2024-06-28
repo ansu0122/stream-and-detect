@@ -181,9 +181,9 @@ def parse_args():
                         help='Kafka topic to consume frames from')
     parser.add_argument('--topic-out', required=False,
                         help='Kafka topic to publish message to')
-    parser.add_argument('--output_dir', required=False,
+    parser.add_argument('--output_dir', required=False, default='/output',
                         help='Directory to save the detection results')
-    parser.add_argument('--model_path', required=False,
+    parser.add_argument('--model_path', required=False, default='detector/models/best.pt',
                         help='Path to the model to use')
     return parser.parse_args()
 
