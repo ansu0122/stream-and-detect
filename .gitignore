@@ -160,10 +160,15 @@ cython_debug/
 #.idea/
 
 data/
-models/
+
 .DS_Store
 
 yolo-runs/
 yolo-mis/
 mis/
 logs/
+
+
+*.pth
+video/
+output/
