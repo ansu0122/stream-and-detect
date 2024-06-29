@@ -17,3 +17,5 @@ Tracker services subscribes to "Traffic" topic and uses YOLOv8 Tracking algorith
 > docker-compose -f docker-compose-s3.yaml up --build -d --scale detector=3
 * Command to shut down the services with s3 setup
 > docker-compose -f docker-compose-s3.yaml down
+
+Make sure the video file is placed into "video" folder of the project root directory. 

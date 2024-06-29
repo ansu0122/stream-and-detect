@@ -42,7 +42,7 @@ services:
       - ./video:/video
     environment:
       - BROKER=broker:9092
-      - PARTITIONS_DETECT=3
+      - PARTITIONS_DETECT=1
       - TOPIC_DETECT=traffic
       - VIDEO_DIR=/video
     privileged: true
