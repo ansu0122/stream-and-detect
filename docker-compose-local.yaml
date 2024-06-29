@@ -41,7 +41,7 @@ services:
     volumes:
       - ./video:/video
     environment:
-      - PARTITIONS_DETECT=2
+      - PARTITIONS_DETECT=3
       - TOPIC_DETECT=traffic
       - VIDEO_DIR=/video
     privileged: true

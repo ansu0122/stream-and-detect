@@ -7,7 +7,7 @@ cap = cv2.VideoCapture("video/Brasil7.mp4")
 assert cap.isOpened(), "Error reading video file"
 w, h, fps = (int(cap.get(x)) for x in (cv2.CAP_PROP_FRAME_WIDTH, cv2.CAP_PROP_FRAME_HEIGHT, cv2.CAP_PROP_FPS))
 
-line_points = [(w // 20, h // 2), (w - (w // 20), h // 2)]
+line_points = [(w // 5, h // 2), (w - (w // 5), h // 2)]
 classes_to_count = [2, 3]  # person and car classes for count
 
 # Video writer
