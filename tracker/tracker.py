@@ -89,7 +89,6 @@ class TrackerService:
 
                 img = self.tracker.count(img)
                 self.video_writer.write(img)
-                self.video_writer.release()
 
                 counts = self.tracker.get_result()
                 new_sum = reduce(lambda acc, val: acc + sum(val.values()), counts.values(), 0)
