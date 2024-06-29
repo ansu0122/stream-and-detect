@@ -12,8 +12,8 @@ Tracker services subscribes to "Traffic" topic and uses YOLOv8 Tracking algorith
 > docker-compose -f docker-compose-local.yaml down
 
 * Command to spin the services with s3 setup
-> export AWS_ACCESS_KEY_ID = access_key_id_here
-> export AWS_SECRET_ACCESS_KEY = secret_access_key_here
+> export AWS_ACCESS_KEY_ID = access_key_id_here \
+> export AWS_SECRET_ACCESS_KEY = secret_access_key_here \
 > docker-compose -f docker-compose-s3.yaml up --build -d --scale detector=3
 * Command to shut down the services with s3 setup
 > docker-compose -f docker-compose-s3.yaml down
