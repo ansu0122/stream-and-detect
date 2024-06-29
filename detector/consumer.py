@@ -13,7 +13,6 @@ import cv2
 from ultralytics import YOLO
 
 
-broker = 'broker:9092'
 classNames = ['bicycle', 'bus', 'car', 'motorbike', 'person']
 
 class MessageObj(object):
@@ -142,6 +141,8 @@ class DetectorService:
 def parse_args():
     parser = argparse.ArgumentParser(
         description='Consume video frames from Kafka and detect objects')
+    parser.add_argument('--broker', required=False, default='broker:9092',
+                        help='Kafka broker')
     parser.add_argument('--topic-in', required=False,
                         help='Kafka topic to consume frames from')
     parser.add_argument('--topic-out', required=False,
@@ -155,11 +156,11 @@ def parse_args():
 
 def main():
     args = parse_args()
+    broker = os.getenv('BROKER', args.broker)
     topic_in = os.getenv('TOPIC_IN', args.topic_in)
     topic_out = os.getenv('TOPIC_OUT', args.topic_out)
     output_dir = os.getenv('OUTPUT_DIR', args.output_dir)
     model_path = os.getenv('MODEL_PATH', args.model_path)
-    print(model_path)
     detector_service = DetectorService(broker, topic_in, topic_out, output_dir, model_path)
     detector_service.run()
 

@@ -10,8 +10,6 @@ from confluent_kafka.serialization import StringSerializer
 from adminapi import create_topic
 
 
-broker = 'broker:9092'
-
 class MessageObj(object):
     def __init__(self, timestamp=None, frame_data=None):
         self.timestamp = timestamp
@@ -36,7 +34,7 @@ def signal_handler(sig, frame):
     sys.exit(0)
 
 
-def produce_messages(topic, video_path):
+def produce_messages(broker, topic, video_path):
 
     signal.signal(signal.SIGTERM, signal_handler)
 
@@ -90,6 +88,8 @@ def delivery_callback(err, msg):
 def parse_args():
     parser = argparse.ArgumentParser(
         description='Stream video frames to Kafka')
+    parser.add_argument('--broker', required=False, default='broker:9092',
+                        help='Kafka broker')
     parser.add_argument('--topic-detect', required=False, default='traffic',
                         help='Kafka topic to subscribed by detector')
     parser.add_argument('--partitions-detect', required=False, default=1,
@@ -110,18 +110,17 @@ def find_video_file(video_dir):
 
 def main():
     args = parse_args()
+    broker = os.getenv('BROKER', args.broker)
     topic_detect = os.getenv('TOPIC_DETECT', args.topic_detect)
     partitions_detect = os.getenv('PARTITIONS_DETECT', args.partitions_detect)
     video_dir = os.getenv('VIDEO_DIR', args.video_dir)
-    print(video_dir)
     video_file = find_video_file(video_dir)
     if not video_file:
         raise Exception(
             "Please provide a video file in the specified directory")
-    print(video_file)
     create_topic(broker, topic_detect, num_partitions=int(partitions_detect))
 
-    produce_messages(topic_detect, video_file)
+    produce_messages(broker, topic_detect, video_file)
 
 
 if __name__ == '__main__':

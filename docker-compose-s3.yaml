@@ -33,17 +33,16 @@ services:
       
   producer:
     build: ./producer
-    image: stream-n-detect-producer-s3
+    image: ansu0122/stream-n-detect-producer-s3
     entrypoint: ["/entrypoint.sh"]
     depends_on:
       - broker
     volumes:
       - s3bucket:/mnt/s3
     environment:
-      - PARTITIONS_DETECT=2
-      - PARTITIONS_TRACK=1
-      - TOPIC_DETECT=detect
-      - TOPIC_TRACK=track
+      - BROKER='broker:9092'
+      - PARTITIONS_DETECT=3
+      - TOPIC_DETECT=traffic
       - VIDEO_DIR=/mnt/s3/video/
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
@@ -53,15 +52,15 @@ services:
       
   detector:
     build: ./detector
-    image: stream-n-detect-detector-s3
+    image: ansu0122/stream-n-detect-detector-s3
     entrypoint: ["/entrypoint.sh"]
     depends_on:
       - producer
     volumes:
       - s3bucket:/mnt/s3
     environment:
-      - TOPIC_IN=detect
-      - TOPIC_OUT=track
+      - BROKER='broker:9092'
+      - TOPIC_IN=fraffic
       - OUTPUT_DIR=/mnt/s3/output/
       - MODEL_PATH=/mnt/s3/models/758fccaeef674621abf2a4740f75f814/artifacts/train/weights/best.pt
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
@@ -72,18 +71,18 @@ services:
 
   tracker:
     build: ./tracker
-    image: stream-n-detect-tracker-s3
+    image: ansu0122/stream-n-detect-tracker-s3
     entrypoint: ["/entrypoint.sh"]
     depends_on:
       - producer
     volumes:
       - ./output:/output
     environment:
-      - BROKER = 'broker:9092' 
+      - BROKER='broker:9092' 
       - TOPIC_IN=traffic
       - OUTPUT_DIR=/mnt/s3/output/
       - MODEL_PATH=/mnt/s3/models/758fccaeef674621abf2a4740f75f814/artifacts/train/weights/best.pt
-      - CLASSES_TO_COUNT = [2, 3]
+      - CLASSES_TO_COUNT = '[2,3]'
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     privileged: true

@@ -35,12 +35,13 @@ services:
     build:
       context: ./producer
       dockerfile: Dockerfile-local
-    image: stream-n-detect-producer-local
+    image: ansu0122/stream-n-detect-producer-local
     depends_on:
       - broker
     volumes:
       - ./video:/video
     environment:
+      - BROKER='broker:9092'
       - PARTITIONS_DETECT=3
       - TOPIC_DETECT=traffic
       - VIDEO_DIR=/video
@@ -52,12 +53,13 @@ services:
     build:
       context: ./detector
       dockerfile: Dockerfile-local
-    image: stream-n-detect-detector-local
+    image: ansu0122/stream-n-detect-detector-local
     depends_on:
       - producer
     volumes:
       - ./output:/output
     environment:
+      - BROKER='broker:9092'
       - TOPIC_IN=traffic
       - OUTPUT_DIR=/output/detect
       - MODEL_PATH=/app/models/best.pt
@@ -69,13 +71,13 @@ services:
     build:
       context: ./tracker
       dockerfile: Dockerfile-local
-    image: stream-n-detect-tracker-local
+    image: ansu0122/stream-n-detect-tracker-local
     depends_on:
       - producer
     volumes:
       - ./output:/output
     environment:
-      - BROKER = 'broker:9092' 
+      - BROKER='broker:9092' 
       - TOPIC_IN=traffic
       - OUTPUT_DIR=/output/track
       - MODEL_PATH=/app/models/best.pt
