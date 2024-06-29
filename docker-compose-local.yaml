@@ -41,7 +41,7 @@ services:
     volumes:
       - ./video:/video
     environment:
-      - BROKER='broker:9092'
+      - BROKER=broker:9092
       - PARTITIONS_DETECT=3
       - TOPIC_DETECT=traffic
       - VIDEO_DIR=/video
@@ -59,7 +59,7 @@ services:
     volumes:
       - ./output:/output
     environment:
-      - BROKER='broker:9092'
+      - BROKER=broker:9092
       - TOPIC_IN=traffic
       - OUTPUT_DIR=/output/detect
       - MODEL_PATH=/app/models/best.pt
@@ -77,7 +77,7 @@ services:
     volumes:
       - ./output:/output
     environment:
-      - BROKER='broker:9092' 
+      - BROKER=broker:9092
       - TOPIC_IN=traffic
       - OUTPUT_DIR=/output/track
       - MODEL_PATH=/app/models/best.pt

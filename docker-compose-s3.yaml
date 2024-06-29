@@ -40,7 +40,7 @@ services:
     volumes:
       - s3bucket:/mnt/s3
     environment:
-      - BROKER='broker:9092'
+      - BROKER=broker:9092
       - PARTITIONS_DETECT=3
       - TOPIC_DETECT=traffic
       - VIDEO_DIR=/mnt/s3/video/
@@ -59,7 +59,7 @@ services:
     volumes:
       - s3bucket:/mnt/s3
     environment:
-      - BROKER='broker:9092'
+      - BROKER=broker:9092
       - TOPIC_IN=fraffic
       - OUTPUT_DIR=/mnt/s3/output/
       - MODEL_PATH=/mnt/s3/models/758fccaeef674621abf2a4740f75f814/artifacts/train/weights/best.pt
@@ -78,7 +78,7 @@ services:
     volumes:
       - ./output:/output
     environment:
-      - BROKER='broker:9092' 
+      - BROKER=broker:9092
       - TOPIC_IN=traffic
       - OUTPUT_DIR=/mnt/s3/output/
       - MODEL_PATH=/mnt/s3/models/758fccaeef674621abf2a4740f75f814/artifacts/train/weights/best.pt
