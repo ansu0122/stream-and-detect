@@ -62,7 +62,6 @@ class DetectorService:
 
     def run(self):
         signal.signal(signal.SIGTERM, signal_handler)
-        string_serializer = StringSerializer('utf_8')
 
         try:
             while True:
@@ -92,11 +91,11 @@ class DetectorService:
                 label_filename = os.path.join(
                     f'{self.output_dir}', f'{current_date}/labels', f'{file_label}.txt')
                 
+                os.makedirs(os.path.dirname(frame_filename), exist_ok=True)
                 cv2.imwrite(frame_filename, img)
 
                 results = self.detector(img)
                 detections, img = self.parse_result(img, results)
-                # cv2.imshow("Image", img)
                 self.save_yolo_labels(detections, label_filename, 640, 640)
 
         except KafkaException as e:

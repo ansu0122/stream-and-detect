@@ -11,5 +11,7 @@ Tracker services subscribes to Track topic and uses DeepSort algorithm along wit
 
 > docker-compose -f docker-compose-local.yaml up --build -d
 
+> docker-compose -f docker-compose-local.yaml down
+
 remove cache
 > docker builder prune

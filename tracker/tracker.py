@@ -108,7 +108,7 @@ class YoloTracker:
         self.classes_to_count = classes_to_count
         self.line_points = [(w // 20, h // 2), (w - (w // 20), h // 2)]
         self.counter = solutions.ObjectCounter(
-            view_img=True,
+            view_img=False,
             reg_pts=self.line_points,
             classes_names=self.model.names,
             draw_tracks=True,
@@ -134,7 +134,7 @@ def parse_args():
                         help='Directory to save the detection results')
     parser.add_argument('--model_path', required=False, default='tracker/models/best.pt',
                         help='Path to the model to use')
-    parser.add_argument('--classes-to-count', required=False, default=[2],
+    parser.add_argument('--classes-to-count', required=False, default='[2,3]',
                         help='Object classes to count')
     return parser.parse_args()
 
@@ -145,7 +145,7 @@ def main():
     topic_in = os.getenv('TOPIC_IN', args.topic_in)
     output_dir = os.getenv('OUTPUT_DIR', args.output_dir)
     model_path = os.getenv('MODEL_PATH', args.model_path)
-    classes_to_count = os.getenv('CLASSES_TO_COUNT', args.classes_to_count)
+    classes_to_count = json.loads(os.getenv('CLASSES_TO_COUNT', args.classes_to_count))
     tracker_service = TrackerService(broker, topic_in, output_dir, model_path, classes_to_count)
     tracker_service.run()
 

@@ -79,7 +79,7 @@ services:
       - TOPIC_IN=traffic
       - OUTPUT_DIR=/output/track
       - MODEL_PATH=/app/models/best.pt
-      - CLASSES_TO_COUNT = [2,3]
+      - CLASSES_TO_COUNT = '[2,3]'
     networks:
       - kafka
       

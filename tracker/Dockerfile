@@ -11,6 +11,9 @@ COPY requirements.txt requirements.txt
 # install cv2 dependencies
 RUN apt-get update && apt-get install ffmpeg libsm6 libxext6  -y
 
+# Install tkinter dependencies
+RUN apt-get install -y python3-tk
+
 # Install s3fs
 RUN apt-get update && apt-get install -y s3fs fuse
 
